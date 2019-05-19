@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        class A{
+            constructor(){
+                
+                this.nameA='nameA'
+            }
+            fnA(){
+                console.log('这里是fnA');
+            }
+        } 
+        class B extends A{
+            constructor(props){
+                super(props)
+                this.nameB='nameB'
+            }
+            fnB(){
+                console.log('这里是fnB');
+            }
+        }  
+        class C extends B{
+            constructor(props){
+                super(props)
+                this.nameC='nameC'
+            }
+            fnC(){
+                console.log('这里是fnC');
+            }
+        }      
+        const c = new C()
+        console.log(Object.keys(c))
+        for(var key in c) {
+            console.log(key);
+            
+        }
+        console.log(c.hasOwnProperty('nameB'));
+        const findMenber = (c,name,fn) => {
+            let arr =[]
+            for(var key in c ){
+                if(key.indexOf(name)===0){
+                    arr.push(c[key])
+                }
+            }
+            const findFn=(__proto__)=>{
+                if(!__proto__) return 
+                
+                
+                Object.getOwnPropertyNames(__proto__).forEach(e => {
+                    if(e.indexOf(fn)===0){
+                        arr.push(e)
+                    }
+                });
+                findFn(__proto__.__proto__)
+            }
+            findFn(c.__proto__)
+            return arr
+        }
+       const a= findMenber(c,'name','fn') // ['nameA','nameB','nameC','fnA','fnB','fnC']
+        console.log(a);
+        
+        
+    </script>
+</body>
+</html>
