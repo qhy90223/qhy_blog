@@ -5,15 +5,27 @@ export default {
   namespace: 'blog',
   state: {
     blogList:[],
-    editerValue:""
+    totalCount:1,
+    pageSize:5,
+    totalPage:1,
+    currentPage:1,
+    editerValue:"",
+    tabKey:0
   },
 
   effects: {
-    *queryBlogList({payload}, {call, put}) {
-      const {blogState}=payload;
-      const res=yield call(getBlogListServer,blogState)
+    *queryBlogList({payload}, {call, put, select}) {
+      let blogState=payload?payload.blogState:"";
+      let currentPage = payload?payload.currentPage:"";
+      if(!blogState){
+        blogState=yield select(state => state.blog.tabKey)
+      }
+      if(!currentPage){
+        currentPage=yield select(state => state.blog.currentPage)
+      }
+      const res=yield call(getBlogListServer,{blogState,currentPage})
       if(res&&res.success){
-        yield put({type:'getBlogListSuccess',payload:{blogList:res.entity}})
+        yield put({type:'getBlogListSuccess',payload:{blogInfo:res.entity}})
       }
     },
     *createBlog({payload},{call,put,select}){
@@ -62,12 +74,12 @@ export default {
 
   reducers: {
     setEditerValue(state,action){
-      
       const {editerValue}=action.payload;
       return {...state,editerValue}
     },
     getBlogListSuccess(state,action){
-      const {blogList}=action.payload;
+      const {currentPage,totalCount,pageSize,totalPage}=action.payload.blogInfo
+      const blogList=action.payload.blogInfo.entityData;
       blogList.forEach(item => {
         if(item.state==1){
           item.status='已发布'
@@ -78,7 +90,7 @@ export default {
         }
 
       });
-      return {...state,blogList}
+      return {...state,blogList,currentPage,totalCount,pageSize,totalPage}
     },
     
     changeLoginStatus(state, {payload}) {

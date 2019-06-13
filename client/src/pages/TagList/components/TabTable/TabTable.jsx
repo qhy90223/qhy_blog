@@ -4,7 +4,7 @@ import CustomTable from './components/CustomTable';
 import EditDialog from './components/EditDialog';
 import DeleteBalloon from './components/DeleteBalloon';
 import {connect} from 'dva'
-
+import { Pagination } from '@alifd/next';
 class TabTable extends Component {
   static displayName = 'TabTable';
 
@@ -86,8 +86,18 @@ class TabTable extends Component {
     const { dispatch} = this.props;
     dispatch({type:'tag/queryTagList'})
   }
+  handlePageChange = (currentPage) => {
+    const {dispatch} =this.props;
+    dispatch({type:'tag/queryTagList',payload:{currentPage}})
+  }
   render() {
-    const {tagList}=this.props.tag
+    const {
+      tagList,
+      currentPage,
+      totalCount,
+      pageSize,
+      totalPage
+    }=this.props.tag
     return (
       <div className="tab-table">
         <IceContainer>
@@ -96,6 +106,12 @@ class TabTable extends Component {
             columns={this.columns}
             hasBorder={false}
           />
+          <Pagination 
+            style={{marginTop:'20px',float:'right'}} 
+            current={currentPage} 
+            total={totalCount}
+            pageSize={pageSize}
+            onChange={this.handlePageChange} />
         </IceContainer>
       </div>
     );

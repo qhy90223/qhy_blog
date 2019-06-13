@@ -5,8 +5,9 @@ const {loginCheck,userAuthority} = require('../middleware/loginCheck')
 const adminCheck =require('../middleware/adminCheck')
 
 router.prefix('/api/tag')
-router.get('/list',adminCheck,async (ctx,next) => {
-  const getTagList = await tagController.getTagList()
+router.get('/list',async (ctx,next) => {
+  const query =ctx.query
+  const getTagList = await tagController.getTagList(query)
   ctx.body= new SuccessModel(getTagList)
 })
 router.post('/create',adminCheck,async (ctx,next) => {

@@ -23,6 +23,7 @@ const users=require('./routes/users')
 const blogs=require('./routes/blogs')
 const tags=require('./routes/tags')
 const cates=require('./routes/cates')
+const comments =require('./routes/comment')
 // require('./routes/blogs')(router)
 // session 配置
 app.proxy = true    
@@ -57,6 +58,7 @@ app
   .use(blogs.routes(),blogs.allowedMethods())
   .use(cates.routes(),cates.allowedMethods())
   .use(tags.routes(),tags.allowedMethods())
+  .use(comments.routes(),comments.allowedMethods())
   .use(serve(path.join(process.cwd(), '../client/build')))
   .use(async (ctx,next)=>{
     ctx.type = 'text/html;charset=utf-8';

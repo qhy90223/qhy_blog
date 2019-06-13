@@ -8,15 +8,31 @@ import {getTagListServer,
   export default {
     namespace: 'tag',
     state: {
-      tagList:[]
+      tagList:[],
+      totalCount:1,
+      pageSize:5,
+      totalPage:1,
+      currentPage:1,
     },
   
     effects: {
-      * queryTagList({payload}, {call, put}) {
-        
-        const res=yield call(getTagListServer)
+      * queryTagList({payload}, {call, put,select}) {
+        let [currentPage,pageSize]=["",""]
+        if(payload&&payload.currentPage){
+          currentPage=payload.currentPage
+        }else{
+          currentPage=yield select ((state) => state.tag.currentPage)
+        }
+        if(payload&&payload.pageSize){
+          pageSize=payload.pageSize
+        }else{
+          pageSize=yield select ((state) => state.tag.pageSize)
+        }
+
        
         
+        const res=yield call(getTagListServer,`?currentPage=${currentPage}&pageSize=${pageSize}`)
+       
         if(res&&res.success){
           yield put({type:'getTagListSuccess',payload:{tagList:res.entity}})
         }
@@ -68,18 +84,29 @@ import {getTagListServer,
   
     reducers: {
       getTagListSuccess(state,action){
-        const {tagList}=action.payload;
-        // TagList.forEach(item => {
-        //   if(item.state==0){
-        //     item.status='已发布'
-        //   }else if(item.state==1){
-        //     item.status='审核中'
-        //   }else{
-        //     item.status='已拒绝'
-        //   }
+        const {
+          entityData,
+          totalCount,
+          pageSize,
+          totalPage,
+          currentPage,
+        }=action.payload.tagList;
+        
+        
+        entityData.forEach(item => {
+          item.key=item.id
+          item.label=item.tagName
+          item.value=item.tagId
   
-        // });
-        return {...state,tagList}
+        });
+        return {
+          ...state,
+          tagList:entityData,
+          totalCount,
+          pageSize,
+          totalPage,
+          currentPage
+        }
       },
       changeLoginStatus(state, {payload}) {
         return {

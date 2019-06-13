@@ -3,18 +3,23 @@ const blogController = require('../controller/blog');
 const {SuccessModel,ErrorModel} = require('../model/basicModel')
 const {loginCheck,userAuthority} = require('../middleware/loginCheck')
 router.prefix('/api/blog');
-router.get('/list',loginCheck,async (ctx,next)=> {
+router.get('/list',async (ctx,next)=> {
   
   const query=ctx.query;
- 
-  
+  const {currentPage,pageSize}=query;
   let blogList=[] ; 
   if(query){
     blogList= await blogController.getBlogList(query)
   }else{
     blogList= await blogController.getBlogList()
   }
+  
   ctx.body=new SuccessModel(blogList)
+})
+router.get('/detail',async (ctx,next) => {
+  const {id} = ctx.query;
+  const detailBlog = await blogController.getDetailBlog(id)
+  ctx.body=new SuccessModel(detailBlog)
 })
 router.post('/update',loginCheck,userAuthority,async (ctx,next) => {
   

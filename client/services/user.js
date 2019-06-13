@@ -3,8 +3,8 @@ const prefix='/api/user'
 const userLogin=(postData) => {
   return http.post(prefix+'/login',postData)
 }
-const getUserListServer=()=>{
-  return http.get(prefix+'/list')
+const getUserListServer=(query)=>{
+  return http.get(prefix+'/list'+`${query?query:""}`)
 }
 const createUser=(postBody) => {
   return http.post(prefix+'/create',postBody)

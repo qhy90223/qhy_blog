@@ -35,10 +35,14 @@ class ContentEditor extends Component {
   }
   componentWillMount() {
     const {dispatch}=this.props;
-  
+    dispatch({type:'cate/queryCateList'})
+    dispatch({type:'tag/queryTagList'})
     dispatch({type:'blog/setEditerValue',payload:{editerValue:""}}) 
   }
   componentDidMount() {
+    const {dispatch}=this.props;
+    dispatch({type:'cate/queryCateList'})
+    dispatch({type:'tag/queryTagList'})
     // const _this=this
     // const {content} = this.state;
     // window.addEventListener('message',(e)=>{
@@ -77,17 +81,19 @@ class ContentEditor extends Component {
         return false;
       }
       
-      let {cate_id,tag_id} = values
-      if(cate_id.length){
-        values.cate_id=cate_id[0]
-      }else{
-        values.cate_id=0
-      }
-      if(tag_id.length){
-        values.tag_id=tag_id[0]
-      }else{
-        values.tag_id=0
-      }
+      // let {cate_id,tag_id} = values
+      // if(cate_id.length){
+      //   values.cate_id=cate_id[0]
+      // }else{
+      //   values.cate_id=0
+      // }
+      // if(tag_id.length){
+      //   values.tag_id=tag_id[0]
+      // }else{
+      //   values.tag_id=0
+      // }
+      console.log(values,'222');
+      
       // values.content=this.state.content
       // console.log(_this.state.valueFn());
      values.content=_this.state.value.content
@@ -109,7 +115,8 @@ class ContentEditor extends Component {
   }
   render() {
     const {content} = this.state.value;
-  
+    const {tagList,cateList} = this.props
+    
     
     
     return (
@@ -146,11 +153,7 @@ class ContentEditor extends Component {
                         style={styles.cats}
                         // mode="multiple"
                         placeholder="请选择分类"
-                        dataSource={[
-                          { label: '分类1', value: '1' },
-                          { label: '分类2', value: '2' },
-                          { label: '分类3', value: '3' },
-                        ]}
+                        dataSource={cateList}
                       />
                     </IceFormBinder>
                     <IceFormError
@@ -184,11 +187,7 @@ class ContentEditor extends Component {
                         style={styles.cats}
                         // mode="multiple"
                         placeholder="请选择标签"
-                        dataSource={[
-                          { label: '标签1', value: '1' },
-                          { label: '标签2', value: '2' },
-                          { label: '标签3', value: '3' },
-                        ]}
+                        dataSource={tagList}
                       />
                     </IceFormBinder>
                     <IceFormError
@@ -247,7 +246,11 @@ const styles = {
     width: '100%',
   },
 };
-const mapStateToProps=({blog})=>{
-  return {blog}
+const mapStateToProps=({blog,cate,tag})=>{
+  return {
+  blog,
+  cateList:cate.cateList,
+  tagList:tag.tagList
+  }
 }
 export default connect(mapStateToProps)(ContentEditor)

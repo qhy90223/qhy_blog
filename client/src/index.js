@@ -1,5 +1,5 @@
 import dva, { connect } from 'dva';
-
+import createLoading from 'dva-loading';
 // 载入默认全局样式 normalize 、.clearfix 和一些 mixin 方法等
 import '@alifd/next/reset.scss';
 import router from './router';
@@ -15,6 +15,7 @@ const createHashHistory=require("history").createHashHistory
 const app = dva({
   history:createHashHistory()
 });
+app.use(createLoading())
 
 // 3.注册model
 models.forEach((m) => {

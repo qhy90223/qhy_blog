@@ -4,7 +4,10 @@ const { genPassword } = require('../utils/cryp')
 
 // const { genPassword } = require('../utils/cryp')
 class UserController {
-  async getUserList(){
+  async getUserList(query){
+    let {currentPage,pageSize}=query;
+    pageSize=pageSize?pageSize:5;
+    currentPage=currentPage?currentPage:1;
     const sql = `SELECT 
     a.id AS userId,
 		a.username AS userName,
@@ -20,9 +23,21 @@ class UserController {
 		LEFT JOIN (select count(author_id) articleNums,author_id from blogs GROUP BY author_id) b
 		on b.author_id = a.id
 		LEFT JOIN (SELECT count(content) commentNums,user_id from comments  GROUP BY user_id) c
-		on c.user_id = a.id
-		` 
-    return exec(sql)
+    on c.user_id = a.id
+    ORDER BY a.id DESC LIMIT ${(currentPage-1)*pageSize},${pageSize};
+    SELECT count(id) as totalCount FROM users;
+    ` 
+    return exec(sql).then(result => {
+      const totalCount=result[1][0].totalCount
+      return {
+        
+        list:result[0],
+        totalCount:parseInt(totalCount),
+        totalPage:Math.ceil(totalCount/pageSize),
+        currentPage:parseInt(currentPage),
+        pageSize:parseInt(pageSize)
+      }
+    })
   }
   async createUser(postBody){
     let {userName,realName,password,eMail,authority,state}=postBody
@@ -100,6 +115,8 @@ class UserController {
     username = escape(username)
     password = genPassword(password)
     password = escape(password)
+
+    
     const sql = `select username, password,realname ,id,authority from users where username=${username} and password=${password}`
     const rows = await exec(sql)
     if(rows[0]){

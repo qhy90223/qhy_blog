@@ -15,7 +15,11 @@ export default {
   namespace: 'user',
   state: {
     user: {},
-    userList:[]
+    userList:[],
+    totalCount:1,
+    pageSize:2,
+    totalPage:1,
+    currentPage:1,
   },
 
   effects: {
@@ -33,13 +37,23 @@ export default {
         Message.error('用户名和密码不正确')
       }
     },
-    * queryUserList({payload}, {call, put}) {
-        
-      const res=yield call(getUserListServer)
+    * queryUserList({payload}, {call, put,select}) {
+      let [currentPage,pageSize]=["",""]
+      if(payload&&payload.currentPage){
+        currentPage=payload.currentPage
+      }else{
+        currentPage=yield select ((state) => state.user.currentPage)
+      }
+      if(payload&&payload.pageSize){
+        pageSize=payload.pageSize
+      }else{
+        pageSize=yield select ((state) => state.user.pageSize)
+      }
+      const res=yield call(getUserListServer,`?currentPage=${currentPage}&pageSize=${pageSize}`)
      
       
       if(res&&res.success){
-        yield put({type:'getUserListSuccess',payload:{userList:res.entity}})
+        yield put({type:'getUserListSuccess',payload:res.entity})
       }
     },
     *createUser({payload},{call,put,select}){
@@ -90,8 +104,15 @@ export default {
 
   reducers: {
     getUserListSuccess(state,action){
-      const {userList}=action.payload;
-      userList.forEach(item => {
+      console.log(action.payload);
+      
+      const {
+        list,
+        totalCount,
+        pageSize,
+        totalPage,
+        currentPage}=action.payload;
+      list.forEach(item => {
         if(item.authority==0){
           item.group='管理员'
         }else{
@@ -99,7 +120,13 @@ export default {
         }
       })
       // });
-      return {...state,userList}
+      return {
+        ...state,
+        userList:list,
+        totalCount,
+        pageSize,
+        totalPage,
+        currentPage}
     },
     onSaveEditer(state,action){
       const {editerValue}=action.payload

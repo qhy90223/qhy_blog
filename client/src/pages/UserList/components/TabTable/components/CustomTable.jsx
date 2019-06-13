@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Table } from '@alifd/next';
+import Loading from '../../../../../components/Loading/index'
 
 export default class CustomTable extends Component {
   static displayName = 'CustomTable';

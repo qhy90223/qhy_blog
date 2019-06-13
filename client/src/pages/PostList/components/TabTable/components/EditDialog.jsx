@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import { Dialog, Button, Form, Input, Field } from '@alifd/next';
+import { Dialog, Button, Form, Input, Field ,Select} from '@alifd/next';
 const FormItem = Form.Item;
+import IceContainer from '@icedesign/container';  
 import {
   FormBinderWrapper as IceFormBinderWrapper,
   FormBinder as IceFormBinder,
   FormError as IceFormError,
 } from '@icedesign/form-binder';
-
 import Mditor from '../../../../../components/Mditor/Mditor'
 export default class EditDialog extends Component {
   static displayName = 'EditDialog';
@@ -17,7 +17,8 @@ export default class EditDialog extends Component {
       visible: false,
       dataIndex: null,
       content: null,
-      valueFn:""
+      valueFn:"",
+      selectValue:"1"
     };
     this.field = new Field(this);
   }
@@ -27,12 +28,14 @@ export default class EditDialog extends Component {
     })
   }
   handleSubmit = () => {
+    const {selectValue}=this.state;
     this.field.validate((errors, values) => {
       if (errors) {
         console.log('Errors in form!!!');
         return;
       }
       values.content=this.state.content
+      values.state=selectValue
       const { dataIndex } = this.state;
       this.props.getFormValues(dataIndex, values,this.setState.bind(this));
     });
@@ -42,17 +45,19 @@ export default class EditDialog extends Component {
     const {dispatch} = this.props;
     let {title,cate_name,author,state,content,id,author_id}=record
     dispatch({type:'blog/setEditerValue',payload:{editerValue:content}}) 
-    this.field.setValues({ title, id,authorId:author_id});
+    this.field.setValues({ title, id,authorId:author_id,state});
     this.setState({
       visible: true,
       dataIndex: index,
-      content
+      content,
+      selectValue:state
     });
   };
 
   onClose = () => {
     this.setState({
       visible: false,
+      selectValue:"1"
     });
   };
   onSaveEditer = (value) =>{
@@ -64,7 +69,12 @@ export default class EditDialog extends Component {
       valueFn
     })
   }
-  
+  changeSelect=(selectValue)=>{
+    
+    this.setState({
+      selectValue
+    })
+  }
   render() {
     const init = this.field.init;
     const { index, record } = this.props;
@@ -84,15 +94,17 @@ export default class EditDialog extends Component {
           编辑
         </Button>
         <Dialog
-          style={{ width: 640 }}
+          style={{ minWidth:'60vw'}}
           visible={this.state.visible}
           onOk={this.handleSubmit}
+          align="tc tc"
           closeable="esc,mask,close"
           onCancel={this.onClose}
           onClose={this.onClose}
           title="编辑"
         >
-          <Form field={this.field}>
+          
+            <Form field={this.field}>
             <FormItem label="标题：" {...formItemLayout}>
               <Input
                 {...init('title', {
@@ -100,32 +112,39 @@ export default class EditDialog extends Component {
                 })}
               />
             </FormItem>
-
-            {/* <FormItem label="作者：" {...formItemLayout}>
-              <Input
-                {...init('author', {
-                  rules: [{ required: true, message: '必填选项' }],
-                })}
-              />
-            </FormItem> */}
-
-            {/* <FormItem label="状态：" {...formItemLayout}>
-              <Input
-                {...init('status', {
-                  rules: [{ required: true, message: '必填选项' }],
-                })}
-              />
-            </FormItem> */}
+            <FormItem label="状态：" {...formItemLayout}>
+              {/* <IceFormBinder
+                    name="state"
+              > */}
+              
+                <Select
+                  style={{width:'100%'}}
+                  // mode="multiple"
+                  onChange={this.changeSelect}
+                  value={this.state.selectValue}
+                  
+                  placeholder="请选择状态"
+                  dataSource={[
+                    { label: '已发布', value: "1" },
+                    { label: '审核中', value: "2" },
+                    { label: '已拒绝', value: "3" },
+                  ]}
+                />
+             
+               
+              {/* </IceFormBinder> */}
+            </FormItem>
 
             <FormItem label="正文" required>
-              {/* <RichEditor value={this.state.content}/> */}
-                {/* <IceFormBinder name="content1">
-                  
-                </IceFormBinder> */}
-                <Mditor getMditorValue={this.getMditorValue} mditorValue={content}/>
-                {/* <ForEditer onSave={this.onSaveEditer} getEditerValue={this.getEditerValue}/> */}
-              </FormItem>
-          </Form>
+              <div style={{minHeight:'400px'}}>
+              <Mditor getMditorValue={this.getMditorValue} mditorValue={content}/>
+              </div>
+              
+            </FormItem>
+            </Form>
+            
+         
+          
         </Dialog>
       </div>
     );

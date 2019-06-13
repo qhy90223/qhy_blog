@@ -28,8 +28,10 @@ router.post('/login',async (ctx,next) => {
       ctx.body = new ErrorModel('用户名或密码错误')
     }
 })
-router.get('/list',adminCheck,async (ctx,next) => {
-  const getUserList=await userController.getUserList()
+router.get('/list',async (ctx,next) => {
+  let query = ctx.query
+  
+  const getUserList=await userController.getUserList(query)
   ctx.body=new SuccessModel(getUserList)
 })
 router.post('/create',adminCheck,async (ctx,next) => {

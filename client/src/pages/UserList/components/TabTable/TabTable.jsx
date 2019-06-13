@@ -6,6 +6,8 @@ import CustomTable from './components/CustomTable';
 import EditDialog from './components/EditDialog';
 import DeleteBalloon from './components/DeleteBalloon';
 import {connect} from 'dva';
+import { Pagination } from '@alifd/next';
+import Loading from '../../../../components/Loading/index'
 const TabPane = Tab.Item;
 
 const tabs = [{ tab: '全部', key: 'all' }, { tab: '审核中', key: 'review' }];
@@ -112,12 +114,23 @@ class TabTable extends Component {
       tabKey: key,
     });
   };
-
+  handlePageChange = (currentPage) => {
+    const {dispatch} =this.props;
+    dispatch({type:'user/queryUserList',payload:{currentPage}})
+  }
   render() {
-    const { userList } = this.props.user;
+    const { 
+      userList,
+      currentPage,
+      totalCount,
+      pageSize,
+      
+     } = this.props.user;
+     const {loading} = this.props;
     return (
       <div className="tab-table">
         <IceContainer style={{ padding: '0 20px 20px' }}>
+          <Loading  visible={loading}>
           <Tab onChange={this.handleTabChange}>
             {tabs.map((item) => {
               return (
@@ -131,12 +144,19 @@ class TabTable extends Component {
               );
             })}
           </Tab>
+          <Pagination 
+            style={{marginTop:'20px',float:'right'}} 
+            current={currentPage} 
+            total={totalCount}
+            pageSize={pageSize}
+            onChange={this.handlePageChange} />
+            </Loading>
         </IceContainer>
       </div>
     );
   }
 }
-const mapStateToProps=({user})=>{
-  return {user}
+const mapStateToProps=({user,loading})=>{
+  return {user,loading:loading.models.user}
 }
 export default connect(mapStateToProps)(TabTable)

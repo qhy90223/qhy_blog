@@ -1,14 +1,28 @@
 const {exec,escape} = require('../db/mysql');
 class tagController{
-  async getTagList(){
+  async getTagList(query){
+    let {currentPage,pageSize}=query;
+    pageSize=pageSize?pageSize:5;
+    currentPage=currentPage?(currentPage):1;
     const sql=`SELECT 
     a.id AS tagId,a.tag_name AS tagName, a.tag_shortname AS tagShortName,COUNT(b.tag_id) AS articleNums,
     a.create_time AS createTime,a.last_update_time AS lastUpdateTime
     FROM 
     tags AS a LEFT JOIN blogs AS b 
     ON  b.tag_id = a.id 
-    GROUP BY a.tag_name;`
-    return exec(sql)
+    GROUP BY a.tag_name
+    ORDER BY a.create_time DESC
+    LIMIT ${(currentPage-1)*pageSize},${pageSize};
+    SELECT count(id) AS totalCount from tags;`
+    return exec(sql).then(res => {
+      return {
+        totalCount:res[1][0].totalCount,
+        entityData:res[0],
+        pageSize:parseInt(pageSize),
+        currentPage:parseInt(currentPage),
+        totalPage:Math.ceil(res[1][0].totalCount/pageSize)
+      }
+    })
   }
   async createTag(postBody){
     let {tagName,tagShortName} =postBody;

@@ -70,16 +70,11 @@ export default {
   reducers: {
     getCateListSuccess(state,action){
       const {cateList}=action.payload;
-      // CateList.forEach(item => {
-      //   if(item.state==0){
-      //     item.status='已发布'
-      //   }else if(item.state==1){
-      //     item.status='审核中'
-      //   }else{
-      //     item.status='已拒绝'
-      //   }
+      cateList.forEach(item => {
+        item.label=item.cateName
+        item.value=item.cateId
 
-      // });
+      });
       return {...state,cateList}
     },
     changeLoginStatus(state, {payload}) {

@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Table } from '@alifd/next';
+
+import { Table,Pagination} from '@alifd/next';
+import Loading  from '../../../../../components/Loading'
 import {connect} from 'dva';
-import {routerRedux} from 'dva/router'
+
 import EditDialog from './EditDialog';
 import DeleteBalloon from './DeleteBalloon';
-const marked =require('marked') ;
+
  class CustomTable extends Component {
   static displayName = 'CustomTable';
 
@@ -85,15 +86,9 @@ const marked =require('marked') ;
       },
     ];
   }
-  premd=(record)=>{
-    const str=marked(record.content.toString())
-    console.log(str,'str');
-    const premd=document.getElementById('premd');
-    premd.innerHTML=str
-    
-  }
+ 
   handleRemove =(value,index,record) =>{
-      console.log(value,index,record,'1111');
+     
       const {dispatch} =this.props;
       let ids=[]
       ids.push(record.id)
@@ -124,25 +119,41 @@ const marked =require('marked') ;
   };
   getFormValues=(index,values,setState)=>{
     const {dispatch} =this.props;
-    console.log(index,values);
+    
     dispatch({type:'blog/updateBlog',payload:{postBody:values,closeDialog:setState}})
   }
+  handlePageChange = (currentPage) => {
+    const {dispatch} =this.props;
+    dispatch({type:'blog/queryBlogList',payload:{currentPage}})
+  }
   render() {
-    const {blogList}=this.props.blog
- 
+    const {blogList,currentPage,totalCount,pageSize,totalPage}=this.props.blog;
+    const {loading} = this.props;
   
-    return <div>
+    
+    
+    return <div >
+      <Loading tip="加载中..." visible={loading} style={{width:'100%'}}>
           <Table 
             dataSource={blogList}
             columns={this.columns}
             hasBorder={false}>
             {this.renderColumns()}
           </Table>
-          <div id="premd" className="for-preview for-markdown-preview"></div>
-          </div>;
+          <Pagination 
+            style={{marginTop:'20px',float:'right'}} 
+            current={currentPage} 
+            total={totalCount}
+            pageSize={pageSize}
+            onChange={this.handlePageChange} />
+      </Loading>
+         
+      </div>;
   }
 }
-const mapStateToProps =({blog}) => {
-  return {blog}
+const mapStateToProps =({blog,loading}) => {
+  
+  
+  return {blog,loading:loading.models.blog}
 }
 export default connect(mapStateToProps)(CustomTable)

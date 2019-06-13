@@ -1,7 +1,9 @@
 import http from '../utils/http';
 const prefix='/api/tag'
-const getTagListServer=()=>{
-  return http.get(prefix+'/list')
+const getTagListServer=(query)=>{
+  console.log(query,'query');
+  
+  return http.get(prefix+'/list'+`${query?query:""}`)
 }
 const createTag=(postBody) => {
   return http.post(prefix+'/create',postBody)

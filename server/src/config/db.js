@@ -9,7 +9,8 @@ if(env==='dev'){
     user:'root',
     password:'123456',
     database:'qhy_blog',
-    timezone:"08:00"
+    timezone:"08:00",
+    multipleStatements: true
   }
   REDIS_CONF={
     host:'127.0.0.1',
@@ -22,7 +23,8 @@ if(env==='dev'){
     user:'root',
     password:'123456',
     databases:'qhy_blog',
-    timezone:"08:00"
+    timezone:"08:00",
+    multipleStatements: true
   }
   REDIS_CONF={
     host:'127.0.0.1',

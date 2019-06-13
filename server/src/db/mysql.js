@@ -12,7 +12,7 @@ const exec = (sql) => {
  
   
   const promise =new Promise((resolve,reject) => {
-    con.query(sql,(err,rows,field) => {
+    con.query(sql,(err,result,field) => {
       if(err){
         // console.log(err,'err');
         
@@ -20,7 +20,7 @@ const exec = (sql) => {
       }
       // console.log(rows);
       
-      return resolve(rows)
+      return resolve(result)
     })
   })
   return promise
