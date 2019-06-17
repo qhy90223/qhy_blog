@@ -4,16 +4,16 @@ class tagController{
     let {currentPage,pageSize}=query;
     pageSize=pageSize?pageSize:5;
     currentPage=currentPage?(currentPage):1;
-    const sql=`SELECT 
-    a.id AS tagId,a.tag_name AS tagName, a.tag_shortname AS tagShortName,COUNT(b.tag_id) AS articleNums,
+    const sql=`SELECT a.id AS tagId, a.tag_name AS tagName, a.tag_shortname AS tagShortName, COUNT(b.tag_id) AS articleNums,
     a.create_time AS createTime,a.last_update_time AS lastUpdateTime
-    FROM 
-    tags AS a LEFT JOIN blogs AS b 
+    FROM tags AS a LEFT JOIN blogs AS b 
     ON  b.tag_id = a.id 
     GROUP BY a.tag_name
     ORDER BY a.create_time DESC
     LIMIT ${(currentPage-1)*pageSize},${pageSize};
     SELECT count(id) AS totalCount from tags;`
+    console.log(sql,'sql');
+    
     return exec(sql).then(res => {
       return {
         totalCount:res[1][0].totalCount,

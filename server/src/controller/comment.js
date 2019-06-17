@@ -24,8 +24,10 @@ class CommentController{
         ${blogSearch}
         ORDER BY a.last_time ${order1}
         LIMIT ${(currentPage-1)*pageSize},${pageSize};
-        SELECT COUNT(a.id) as totalCount FROM COMMENTS as a WHERE blog_id = '${blogId}';
+        SELECT COUNT(a.id) as totalCount FROM comments as a WHERE blog_id = '${blogId}';
         `
+        console.log(sql,'sql');
+        
         // console.log(sql,'sql');
         return exec(sql).then(data => {
             return {
