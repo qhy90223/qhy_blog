@@ -13,6 +13,10 @@ class UserController {
 		a.username AS userName,
 		a.realname AS realName,
     a.e_mail AS eMail,
+    a.avatar_url AS avatar_url,
+    a.description AS description,
+    a.website AS website,
+    a.github_id AS github_id,
 		a.authority,
 		a.state,
 		b.articleNums AS articleNums,
@@ -53,6 +57,8 @@ class UserController {
       }
     })
   }
+  
+  
   async updateUser(postBody){
     let {userId,userName,realName,password,eMail,authority,state}=postBody
     password=genPassword(password)
@@ -63,10 +69,11 @@ class UserController {
     e_mail=${escape(eMail)},
     authority=${escape(authority)},
     state=${escape(state)} 
-    WHERE id=${escape(userId)}`
+    WHERE id=${escape(userId)};
+    SELECT id,username,realname,github_id,authority,state FROM users WHERE id=${escape(userId)}`
     return exec(sql).then(rows => {
-      if(rows.affectedRows){
-        return true
+      if(rows[0].affectedRows){
+        return rows[1][0]
       }else{
         return false
       }
@@ -110,14 +117,16 @@ class UserController {
     const res = await userService.profile();
     ctx.body = res.data;
   }
-  async login(username,password) {
+  async login(username,password,isCryp) {
     
     username = escape(username)
-    password = genPassword(password)
+    if(!isCryp){
+      password = genPassword(password)
+    }
     password = escape(password)
 
     
-    const sql = `select username, password,realname ,id,authority from users where username=${username} and password=${password}`
+    const sql = `select * from users where username=${username} and password=${password}`
     const rows = await exec(sql)
     if(rows[0]){
       const sql1=`UPDATE users SET lastlogin_time=NOW() WHERE id='${rows[0].id}'`

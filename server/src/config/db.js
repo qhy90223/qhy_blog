@@ -16,13 +16,12 @@ if(env==='dev'){
     host:'127.0.0.1',
     port: 6379
   }
-}else if(env==="production"){
+}else if(env==="pro"){
   MYSQL_CONF={
-    host:'localhost',
-    port:3306,
+     host:'localhost',
     user:'root',
     password:'123456',
-    databases:'qhy_blog',
+    database:'qhy_blog',
     timezone:"08:00",
     multipleStatements: true
   }

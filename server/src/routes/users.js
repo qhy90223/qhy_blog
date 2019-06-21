@@ -8,8 +8,8 @@ const path = require('path');
 // const passport = require(path.join(__dirname,'../auth/passport_config'))
 router.prefix('/api/user');
 router.post('/login',async (ctx,next) => {
-  let { username, password } = ctx.request.body;
-  const result= await userController.login(username, password)
+  let { username, password ,isCryp} = ctx.request.body;
+  const result= await userController.login(username, password,isCryp)
   if(result.username){
     ctx.session.userId=result.id;
     ctx.session.username=result.username;
@@ -17,17 +17,13 @@ router.post('/login',async (ctx,next) => {
     ctx.session.userAuthority=result.authority
     ctx.body=new SuccessModel({
           currentPath:'/cms/blog/list',
-          currentUser:{
-            username:result.username,
-            realname:result.realname,
-            states:result.states,
-            authority:result.authority
-          }
+          entity:result
       })
     } else {
       ctx.body = new ErrorModel('用户名或密码错误')
     }
 })
+
 router.get('/list',async (ctx,next) => {
   let query = ctx.query
   
@@ -43,11 +39,12 @@ router.post('/create',adminCheck,async (ctx,next) => {
     ctx.body= new ErrorModel('创建失败')
   }
 })
+
 router.post('/update',adminCheck,async (ctx,next) => {
   const postBody=ctx.request.body;
   const resultUpdate=await userController.updateUser(postBody)
-  if(resultUpdate){
-    ctx.body=new SuccessModel('更新成功')
+  if(resultUpdate&&resultUpdate.id){
+    ctx.body=new SuccessModel(resultUpdate)
   }else{
     ctx.body=new ErrorModel('更新失败')
   }
@@ -69,5 +66,9 @@ router.post('/repassword',loginCheck,async (ctx,next)=>{
   }else{
     ctx.body=new ErrorModel('密码修改错误')
   }
+})
+router.get('/logout',async (ctx,next) => {
+  ctx.session=null;
+  ctx.body=new SuccessModel('安全退出成功')
 })
 module.exports = router 

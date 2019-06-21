@@ -24,6 +24,8 @@ const blogs=require('./routes/blogs')
 const tags=require('./routes/tags')
 const cates=require('./routes/cates')
 const comments =require('./routes/comment')
+const githubOauth = require('./routes/github');
+global.jumpPath="http://localhost:8888/"
 // require('./routes/blogs')(router)
 // session 配置
 app.proxy = true    
@@ -39,6 +41,7 @@ app
   .use(respond())
   
   .use(session({
+    key:'qhy_blog_login',
     // 配置 cookie
     cookie: {
       path: '/',
@@ -55,6 +58,7 @@ app
   // .use(passport.session())
   //路由
   .use(users.routes(),users.allowedMethods())
+  .use(githubOauth.routes(), githubOauth.allowedMethods())
   .use(blogs.routes(),blogs.allowedMethods())
   .use(cates.routes(),cates.allowedMethods())
   .use(tags.routes(),tags.allowedMethods())
