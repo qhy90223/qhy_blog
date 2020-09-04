@@ -34,7 +34,7 @@
     "immutable": "^3.8.2",
     "install": "^0.12.2",
     "is-hotkey": "^0.1.1",
-    "marked": "^0.6.2",
+    "marked": "^0.7.0",
     "moment": "^2.23.0",
     "npm": "^6.9.0",
     "prismjs": "^1.16.0",
